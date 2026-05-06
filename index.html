@@ -142,6 +142,18 @@ body::after{
 .fc-ex-tel{font-family:'Noto Sans Telugu',sans-serif;font-size:14px;color:var(--text);line-height:1.6}
 .fc-ex-eng{font-size:12px;color:var(--text-muted);margin-top:2px}
 .fc-tap-hint{font-size:12px;color:var(--text-muted);margin-top:16px;opacity:0.7}
+#speak-btn{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(201,168,76,0.12);border:1.5px solid rgba(201,168,76,0.4);
+  border-radius:24px;padding:8px 20px;cursor:pointer;
+  transition:all 0.18s;color:var(--gold-text);font-size:14px;font-weight:600;
+  font-family:'DM Sans',sans-serif;
+}
+#speak-btn:hover{background:rgba(201,168,76,0.22);border-color:var(--gold);transform:scale(1.04)}
+#speak-btn:active{transform:scale(0.97)}
+#speak-btn.speaking{background:rgba(201,168,76,0.25);border-color:var(--gold);animation:pulse-speak 0.8s infinite}
+#speak-icon{font-size:18px}
+@keyframes pulse-speak{0%,100%{opacity:1}50%{opacity:0.5}}
 
 /* ── RATING BUTTONS ── */
 #rating-row{display:flex;gap:8px;margin-top:16px;justify-content:center}
@@ -467,12 +479,15 @@ body::after{
             </div>
             <div class="fc-face" id="fc-back">
               <div class="fc-label">Pronunciation</div>
-              <div class="fc-translit" id="fc-translit" style="font-size:28px;font-style:normal;color:var(--gold-text);margin-bottom:4px"></div>
-              <div class="fc-pronun" id="fc-pronun" style="font-size:14px;color:var(--accent);margin-bottom:10px"></div>
-              <div class="fc-telugu" id="fc-telugu-word" style="font-size:20px;opacity:0.6;margin-bottom:10px"></div>
+              <div class="fc-translit" id="fc-translit" style="font-size:28px;font-style:normal;color:var(--gold-text);margin-bottom:6px"></div>
+              <button id="speak-btn" onclick="speakCurrentWord(event)" title="Hear pronunciation">
+                <span id="speak-icon">🔊</span>
+                <span id="speak-hint"></span>
+              </button>
+              <div class="fc-telugu" id="fc-telugu-word" style="font-size:18px;opacity:0.5;margin-top:8px;margin-bottom:8px"></div>
               <div class="fc-example">
-                <div class="fc-ex-eng" id="fc-ex-eng" style="font-size:13px;color:var(--text-muted);margin-bottom:4px"></div>
-                <div class="fc-ex-tel" id="fc-ex-tel" style="font-size:13px;color:var(--text-muted);font-style:italic"></div>
+                <div class="fc-ex-eng" id="fc-ex-eng" style="font-size:13px;color:var(--text-muted);margin-bottom:3px"></div>
+                <div class="fc-ex-tel" id="fc-ex-tel" style="font-size:12px;color:var(--text-muted);font-style:italic"></div>
               </div>
             </div>
           </div>
@@ -875,16 +890,53 @@ function startSession(){
 function renderCard(){
   const word = WORDS.find(w=>w.id===sessionCards[sessionIndex]);
   if(!word) return;
+  _currentWord = word;
   document.getElementById('flashcard').classList.remove('flipped');
   cardFlipped = false;
   document.getElementById('rating-row').style.display='none';
   document.getElementById('fc-english-word').textContent = word.english;
   document.getElementById('fc-telugu-word').textContent = word.telugu;
   document.getElementById('fc-translit').textContent = word.transliteration;
-  document.getElementById('fc-pronun').textContent = '🔊 ' + word.pronunciation_hint;
+  document.getElementById('speak-hint').textContent = word.pronunciation_hint;
   document.getElementById('fc-ex-eng').textContent = '"' + word.example_sentence_english + '"';
   document.getElementById('fc-ex-tel').textContent = word.transliteration ? '(' + word.example_sentence_telugu + ')' : '';
   updateSessionInfo();
+}
+
+let _currentWord = null; // track word for speak button
+
+function speakCurrentWord(e){
+  e.stopPropagation(); // don't flip the card
+  if(!_currentWord) return;
+  if(!('speechSynthesis' in window)){
+    alert('Text-to-speech is not supported in this browser. Try Chrome or Safari.');
+    return;
+  }
+  const btn = document.getElementById('speak-btn');
+  window.speechSynthesis.cancel();
+
+  // Prefer Telugu voice; fall back to phonetic hint read in English
+  const voices = window.speechSynthesis.getVoices();
+  const teluguVoice = voices.find(v => v.lang && v.lang.startsWith('te'));
+
+  const utt = new SpeechSynthesisUtterance();
+  if(teluguVoice){
+    utt.voice = teluguVoice;
+    utt.lang = 'te-IN';
+    utt.text = _currentWord.telugu;
+    utt.rate = 0.85;
+  } else {
+    // Read the pronunciation hint slowly so it sounds like the word
+    utt.lang = 'en-US';
+    utt.text = _currentWord.pronunciation_hint.replace(/-/g,' ');
+    utt.rate = 0.7;
+    utt.pitch = 1.05;
+  }
+
+  btn.classList.add('speaking');
+  utt.onend = () => btn.classList.remove('speaking');
+  utt.onerror = () => btn.classList.remove('speaking');
+  window.speechSynthesis.speak(utt);
 }
 
 function flipCard(){
