@@ -802,7 +802,8 @@ function buildModuleBar(){
   bar.innerHTML = `<button class="module-pill active" onclick="selectModule(0,this)">🌟 All</button>` +
     MODULES.map(m=>{
       const locked = p.level < m.minLevel;
-      return `<button class="module-pill${locked?' locked':''}" onclick="${locked?'':``selectModule(${m.id},this)``}">${m.icon} ${m.name}</button>`;
+      const onclick = locked ? '' : `onclick="selectModule(${m.id},this)"`;
+      return `<button class="module-pill${locked?' locked':''}" ${onclick}>${m.icon} ${m.name}</button>`;
     }).join('');
 }
 
