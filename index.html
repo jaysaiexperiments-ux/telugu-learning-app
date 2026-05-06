@@ -172,13 +172,33 @@ body::after{
 #quiz-question{font-size:18px;font-weight:600;text-align:center;margin-bottom:24px;line-height:1.4}
 #quiz-options{display:flex;flex-direction:column;gap:10px}
 .quiz-option{
-  padding:14px 18px;border-radius:12px;border:1px solid var(--border);
-  background:var(--surface);cursor:pointer;transition:all 0.15s;font-size:15px;
-  font-family:'Noto Sans Telugu',sans-serif;
+  padding:16px 20px;border-radius:12px;
+  border:1.5px solid rgba(201,168,76,0.45);
+  background:linear-gradient(135deg,#162840,#1a3050);
+  cursor:pointer;transition:all 0.18s;font-size:15px;font-weight:500;
+  font-family:'DM Sans',sans-serif;color:var(--text);text-align:left;
+  display:flex;align-items:center;gap:14px;
 }
-.quiz-option:hover{border-color:var(--gold);background:var(--surface2)}
-.quiz-option.correct{border-color:var(--success);background:rgba(34,197,94,0.1);color:var(--success)}
-.quiz-option.wrong{border-color:var(--danger);background:rgba(239,68,68,0.1);color:var(--danger)}
+.quiz-option::before{
+  content:attr(data-letter);
+  min-width:28px;height:28px;border-radius:50%;
+  background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--gold-text);flex-shrink:0;
+}
+.quiz-option:hover{
+  border-color:var(--gold);background:linear-gradient(135deg,#1e3555,#224060);
+  transform:translateY(-1px);box-shadow:0 4px 20px rgba(201,168,76,0.12);
+}
+.quiz-option.correct{
+  border-color:var(--success);background:rgba(34,197,94,0.12);color:var(--success);
+  box-shadow:0 0 20px rgba(34,197,94,0.15);
+}
+.quiz-option.correct::before{background:rgba(34,197,94,0.2);border-color:var(--success);color:var(--success)}
+.quiz-option.wrong{
+  border-color:var(--danger);background:rgba(239,68,68,0.1);color:var(--danger);
+}
+.quiz-option.wrong::before{background:rgba(239,68,68,0.2);border-color:var(--danger);color:var(--danger)}
 #quiz-hint{margin-top:14px;padding:12px 16px;background:rgba(201,168,76,0.08);border-radius:10px;border:1px solid var(--border);font-size:13px;color:var(--text-muted);display:none}
 #quiz-next-btn{
   margin-top:18px;width:100%;padding:14px;border-radius:12px;
@@ -731,10 +751,11 @@ function renderQuiz(){
   document.getElementById('quiz-next-btn').style.display='none';
   quizAnswered = false;
   const opts = document.getElementById('quiz-options');
+  const letters = ['A','B','C','D'];
   const shuffled = [...currentQ.options].sort(()=>Math.random()-0.5);
-  opts.innerHTML = shuffled.map(o=>{
+  opts.innerHTML = shuffled.map((o,i)=>{
     const isCorrect = o === currentQ.answer ? 'true' : 'false';
-    return `<button class="quiz-option" data-correct="${isCorrect}" onclick="answerQuiz(this)">${o}</button>`;
+    return `<button class="quiz-option" data-correct="${isCorrect}" data-letter="${letters[i]}" onclick="answerQuiz(this)">${o}</button>`;
   }).join('');
 }
 
