@@ -441,18 +441,18 @@ body::after{
         <div id="flashcard-wrap" onclick="flipCard()">
           <div id="flashcard">
             <div class="fc-face" id="fc-front">
-              <div class="fc-label">Translate to Telugu</div>
+              <div class="fc-label">How do you say this in Telugu?</div>
               <div class="fc-english" id="fc-english-word"></div>
-              <div class="fc-tap-hint">Tap to reveal ↓</div>
+              <div class="fc-tap-hint">Say it out loud, then tap to check ↓</div>
             </div>
             <div class="fc-face" id="fc-back">
-              <div class="fc-label">Telugu</div>
-              <div class="fc-telugu" id="fc-telugu-word"></div>
-              <div class="fc-translit" id="fc-translit"></div>
-              <div class="fc-pronun" id="fc-pronun"></div>
+              <div class="fc-label">Pronunciation</div>
+              <div class="fc-translit" id="fc-translit" style="font-size:28px;font-style:normal;color:var(--gold-text);margin-bottom:4px"></div>
+              <div class="fc-pronun" id="fc-pronun" style="font-size:14px;color:var(--accent);margin-bottom:10px"></div>
+              <div class="fc-telugu" id="fc-telugu-word" style="font-size:20px;opacity:0.6;margin-bottom:10px"></div>
               <div class="fc-example">
-                <div class="fc-ex-tel" id="fc-ex-tel"></div>
-                <div class="fc-ex-eng" id="fc-ex-eng"></div>
+                <div class="fc-ex-eng" id="fc-ex-eng" style="font-size:13px;color:var(--text-muted);margin-bottom:4px"></div>
+                <div class="fc-ex-tel" id="fc-ex-tel" style="font-size:13px;color:var(--text-muted);font-style:italic"></div>
               </div>
             </div>
           </div>
@@ -594,50 +594,51 @@ body::after{
 // ═══════════════════════════════════════════════════════
 
 const MODULES = [
-  { id:1, name:'Phonetics', desc:'Vowels & consonants', icon:'🔤', minLevel:0, wordGroups:[], lesson:{title:'Telugu Vowels',body:'Telugu has 16 vowels. The most common: <span class="telugu-ex">అ ఆ ఇ ఈ ఉ ఊ</span> Sound: a · aa · i · ee · u · oo<br>Consonants follow vowels to form syllables: <span class="telugu-ex">క కా కి కీ కు కూ</span>'} },
-  { id:2, name:'Survival', desc:'Greetings & basics', icon:'👋', minLevel:0, wordGroups:['greetings','numbers'], lesson:{title:'Say Hello',body:'Start every interaction with: <span class="telugu-ex">నమస్కారం</span> (namaskāram) — Hello<br>Reply to "how are you" with: <span class="telugu-ex">బాగున్నాను</span> (bāgunnānu) — I\'m fine'} },
-  { id:3, name:'Daily Life', desc:'Food, family, time', icon:'🏠', minLevel:1, wordGroups:['family','food','time'], lesson:{title:'SOV Word Order',body:'Telugu is Subject-Object-Verb:<br><span class="telugu-ex">నేను అన్నం తింటాను</span><br>I · rice · eat (= I eat rice)<br>The verb always comes last!'} },
-  { id:4, name:'Navigation', desc:'Body & directions', icon:'🗺️', minLevel:1, wordGroups:['body','directions'], lesson:{title:'Asking Where',body:'Use <span class="telugu-ex">ఎక్కడ</span> (ekkaḍa) for "where":<br><span class="telugu-ex">బాత్రూమ్ ఎక్కడ ఉంది?</span><br>Where is the bathroom?'} },
-  { id:5, name:'Emotions', desc:'Feelings & verbs', icon:'❤️', minLevel:1, wordGroups:['emotions','verbs_basic'], lesson:{title:'Express Feelings',body:'Add -గా (-ga) to make adverbs:<br><span class="telugu-ex">సంతోషంగా</span> = happily<br><span class="telugu-ex">నేను సంతోషంగా ఉన్నాను</span><br>I am (feeling) happy'} },
-  { id:6, name:'Advanced', desc:'Adjectives & more', icon:'🌟', minLevel:2, wordGroups:['adjectives_basic','daily_life'], lesson:{title:'Adjectives in Telugu',body:'Adjectives come before nouns:<br><span class="telugu-ex">పెద్ద ఇల్లు</span> = big house<br><span class="telugu-ex">మంచి మనిషి</span> = good person<br>No gender agreement needed!'} }
+  { id:1, name:'Survival', desc:'Greetings & numbers', icon:'👋', minLevel:0, wordGroups:['greetings','numbers'], lesson:{title:'Say Hello in Telugu',body:'The universal Telugu greeting is <strong>namaskāram</strong> (నమస్కారం).<br><br>Key phrases to start:<br>• "bāgunnānu" — I\'m fine<br>• "dhanyavādālu" — thank you<br>• "sarē" — okay<br><br>Telugu puts the verb at the END: "nēnu neeru kāvāli" = I water want (I want water)'} },
+  { id:2, name:'People', desc:'Family & pronouns', icon:'👨‍👩‍👧', minLevel:0, wordGroups:['family','daily_life'], lesson:{title:'Pronouns & People',body:'Key pronouns (say these out loud!):<br>• <strong>nēnu</strong> — I<br>• <strong>nuvvu</strong> — you (casual)<br>• <strong>mīru</strong> — you (respectful, use with elders)<br>• <strong>atanu</strong> — he / <strong>āme</strong> — she<br><br>Family: amma (mom), nānna (dad), akka (big sister), anna (big brother)'} },
+  { id:3, name:'Food & Life', desc:'Food, body, time', icon:'🍛', minLevel:1, wordGroups:['food','body','time'], lesson:{title:'Ordering Food',body:'Essential food phrases:<br>• "nāku ___ kāvāli" — I want ___<br>• "nāku ākaligā undi" — I\'m hungry<br>• "ruchi gā undi" — it\'s delicious<br>• "chālā kāramgā undi" — very spicy!<br><br>Time words: ippudu (now), tarvāta (later), ērozu (today), rēpu (tomorrow)'} },
+  { id:4, name:'Getting Around', desc:'Directions & places', icon:'🗺️', minLevel:1, wordGroups:['directions','emotions'], lesson:{title:'Asking for Directions',body:'The magic question word: <strong>ekkaḍa</strong> = where<br><br>• "bathroom ekkaḍa undi?" — Where is the bathroom?<br>• "station ekkaḍa undi?" — Where is the station?<br>• "daggara" — nearby / "dūramgā" — far<br>• "ēḍama" — left / "kuḍi" — right'} },
+  { id:5, name:'Action', desc:'Verbs & adjectives', icon:'⚡', minLevel:1, wordGroups:['verbs_basic','adjectives_basic'], lesson:{title:'Essential Verbs',body:'The most-used verbs (command form):<br>• veḷḷu — go / rā — come<br>• cūḍu — look / vinu — listen<br>• tinu — eat / tāgu — drink<br><br>Adjectives go BEFORE the noun:<br>"pedda illu" = big house, "manci manishi" = good person'} },
+  { id:6, name:'Conversations', desc:'Full sentences & phrases', icon:'💬', minLevel:2, wordGroups:['emotions','verbs_basic','adjectives_basic'], lesson:{title:'Making Sentences',body:'Telugu sentence formula:<br><strong>[Subject] + [Object] + [Verb]</strong><br><br>Examples:<br>• "nēnu Telugu nērcukuntunnānu" — I am learning Telugu<br>• "nāku Telugu andam" — I love Telugu (lit: to-me Telugu beautiful)<br>• "nuvvu bāgā māṭlāḍutunnāvu" — You are speaking well'} }
 ];
 
 const PLACEMENT_QUESTIONS = [
-  { q:"The Telugu letter అ makes which sound?", options:["a (short, as in 'about')","aa (long, as in 'father')","i (as in 'bit')","u (as in 'book')"], answer:"a (short, as in 'about')", hint:"అ is the very first Telugu vowel — a short 'a' sound." },
-  { q:"What does నమస్కారం mean?", options:["Goodbye","Thank you","Hello / Greetings","Sorry"], answer:"Hello / Greetings", hint:"నమస్కారం (namaskāram) is the standard Telugu greeting." },
-  { q:"Telugu script is read in which direction?", options:["Right to left","Top to bottom","Bottom to top","Left to right"], answer:"Left to right", hint:"Like English, Telugu reads left to right." },
-  { q:"Which Telugu word means 'water'?", options:["అన్నం","కాఫీ","పాలు","నీరు"], answer:"నీరు", hint:"నీరు (nīru) means water — one of the first words to learn!" },
-  { q:"The suffix -గా (-ga) in Telugu typically means:", options:["I (first person)","The (article)","...ly (adverb suffix)","And (conjunction)"], answer:"...ly (adverb suffix)", hint:"వేగంగా = quickly, శాంతిగా = peacefully" },
-  { q:"Which word is Telugu for 'mother'?", options:["నాన్న","అక్క","తాత","అమ్మ"], answer:"అమ్మ", hint:"అమ్మ (amma) — you may have heard this before!" },
-  { q:"In Telugu sentences, the verb typically comes at the:", options:["Beginning","Middle","Before the subject","End (Subject-Object-Verb)"], answer:"End (Subject-Object-Verb)", hint:"నేను అన్నం తిన్నాను = I rice ate (I ate rice)" },
-  { q:"What does ధన్యవాదాలు mean?", options:["Sorry","Please","Welcome","Thank you"], answer:"Thank you", hint:"ధన్యవాదాలు (dhanyavādālu) is the formal thank you." },
-  { q:"Which Telugu word means 'five'?", options:["పది","ఒకటి","అయిదు","ఇరవై"], answer:"అయిదు", hint:"అయిదు (ayidu) = 5. పది = 10, ఇరవై = 20." },
-  { q:"The Telugu vowel ఇ sounds most like:", options:["'a' as in cat","'o' as in go","'u' as in cup","'ee' as in bee"], answer:"'ee' as in bee", hint:"ఇ makes a short 'i' / 'ee' sound, like 'bit' or 'bee'." }
+  { q:"Which of these sounds like a Telugu greeting you may have heard before?", options:["namaskāram","al-salamu alaykum","nihao","bonjour"], answer:"namaskāram", hint:"namaskāram (నమస్కారం) is the everyday Telugu hello — you may have heard it in Indian films!" },
+  { q:"The spoken word 'neeru' in Telugu means:", options:["fire","food","water","money"], answer:"water", hint:"neeru (నీరు) = water. One of the most essential words to know!" },
+  { q:"Telugu sentences follow which spoken word order?", options:["Verb first, like Arabic","Subject-Verb-Object, like English","Subject-Object-Verb — verb comes last","Object first, then verb"], answer:"Subject-Object-Verb — verb comes last", hint:"Example: nēnu neeru tāgutānu = I water drink (I drink water). Verb always lands last!" },
+  { q:"The word 'amma' in Telugu means:", options:["father","grandfather","aunt","mother"], answer:"mother", hint:"amma (అమ్మ) = mother. You may have heard this word in South Indian movies!" },
+  { q:"How do you say thank you in spoken Telugu?", options:["shukriya","dhanyavādālu","nandri","meherbāni"], answer:"dhanyavādālu", hint:"dhanyavādālu (ధన్యవాదాలు) — the polite formal thank you. Shorter informal: sthuthi." },
+  { q:"What does the spoken word 'avunu' mean?", options:["no","maybe","please","yes"], answer:"yes", hint:"avunu (అవును) = yes. kādu (కాదు) = no. Two of the most useful words ever!" },
+  { q:"The spoken word 'nēnu' in Telugu means:", options:["you","he","I","we"], answer:"I", hint:"nēnu (నేను) = I. mīru (మీరు) = you (polite). Learning pronouns unlocks full sentences!" },
+  { q:"How do you say 'I am hungry' in spoken Telugu?", options:["nāku neeru kāvāli","nāku ākaligā undi","nāku bhayamgā undi","nāku nidra vastundi"], answer:"nāku ākaligā undi", hint:"nāku ākaligā undi = to-me hungry is (I am hungry). nāku = to me, ākaligā = hungrily!" },
+  { q:"Which spoken word means 'come here' in Telugu?", options:["veḷḷu","nillu","kūrco","rā"], answer:"rā", hint:"rā (రా) = come! veḷḷu (వెళ్ళు) = go. Short and very useful!" },
+  { q:"To ask 'where is the bathroom?' in Telugu you would say:", options:["bathroom enthundi?","bathroom eppudu?","bathroom ekkaḍa undi?","bathroom evaru?"], answer:"bathroom ekkaḍa undi?", hint:"ekkaḍa (ఎక్కడ) = where. undi = is. So: bathroom ekkaḍa undi? = bathroom where is?" }
 ];
 
-const SYSTEM_PROMPT = `You are Priya, a warm and encouraging Telugu language tutor for native English speakers learning from scratch.
+const SYSTEM_PROMPT = `You are Priya, a warm Telugu conversation tutor. The user is a native English speaker who wants SPOKEN fluency — they do NOT want to learn Telugu script. Focus 100% on pronunciation and speaking.
 
 Format ALL responses like this:
-1. Answer in English first (clear, concise)
-2. Telugu word/phrase in Telugu script on its own line
-3. Transliteration in parentheses on the next line
+1. Answer in English first (clear, brief)
+2. The Telugu word/phrase as TRANSLITERATION (Roman letters) — this is the priority
+3. Pronunciation guide in quotes, e.g. sounds like "nee-roo"
+4. Telugu script in parentheses at the end (optional reference only)
 
-Example format:
-"Water" in Telugu is:
-నీరు
-(nīru — sounds like "nee-roo")
-
-Example sentence: నాకు నీరు కావాలి (nākku nīru kāvāli) — I need water.
+Example:
+"Water" in Telugu is neeru — sounds like "nee-roo" (నీరు)
+Example sentence: nāku neeru kāvāli — I need water (sounds like "naa-ku nee-ru kaa-vaa-li")
 
 Rules:
-- Always include Telugu script + transliteration + pronunciation hint
-- Always give at least one example sentence
-- Correct the user's Telugu gently: show the right form, briefly explain why
-- Keep explanations short and chunked — one concept at a time
-- When the user asks "how do I say X?", answer then ask them to try using it in a sentence
-- Use encouraging phrases: "Great try!", "Almost perfect!", "You're doing well!"
-- Never use linguistic jargon without explaining it
-- Adjust mode based on context: explain grammar in Explain mode, ask questions in Quiz mode, have natural conversation in Free Chat mode`;
+- ALWAYS lead with transliteration, NOT Telugu script
+- ALWAYS include a pronunciation guide (how it sounds in English syllables)
+- Telugu script is secondary — show it in brackets for reference only
+- Focus on phrases the user can immediately SAY out loud
+- Correct the user's pronunciation gently using the Roman transliteration
+- Give real conversational examples they can use today
+- Keep it short and practical — one phrase at a time
+- Use encouraging phrases: "Great!", "Almost — try it like this:", "You got it!"
+- In Quiz mode: test them by giving the English and asking them to say/type the Telugu transliteration
+- In Free Chat mode: have a conversation using Telugu words mixed with English
+- In Sentence Help mode: give the full spoken sentence with word-by-word breakdown`;
 
 // ═══════════════════════════════════════════════════════
 // STATE MANAGEMENT
@@ -719,38 +720,39 @@ function buildSession(){
 // PLACEMENT QUIZ
 // ═══════════════════════════════════════════════════════
 
-let quizIndex = 0, quizScore = 0, quizAnswered = false;
+let quizIndex = 0, quizScore = 0, quizAnswered = false, currentQ = null;
 
 function renderQuiz(){
-  const q = PLACEMENT_QUESTIONS[quizIndex];
+  currentQ = PLACEMENT_QUESTIONS[quizIndex];
   document.getElementById('quiz-q-num').textContent = `Question ${quizIndex+1} of ${PLACEMENT_QUESTIONS.length}`;
-  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-question').textContent = currentQ.q;
   document.getElementById('quiz-progress-fill').style.width = (quizIndex/PLACEMENT_QUESTIONS.length*100)+'%';
   document.getElementById('quiz-hint').style.display='none';
-  document.getElementById('quiz-hint').textContent='';
   document.getElementById('quiz-next-btn').style.display='none';
   quizAnswered = false;
   const opts = document.getElementById('quiz-options');
-  // shuffle options while tracking correct answer
-  const shuffled = [...q.options].sort(()=>Math.random()-0.5);
-  opts.innerHTML = shuffled.map(o=>`<button class="quiz-option" onclick="answerQuiz(this,'${escQ(o)}','${escQ(q.answer)}','${escQ(q.hint)}')">${o}</button>`).join('');
+  const shuffled = [...currentQ.options].sort(()=>Math.random()-0.5);
+  opts.innerHTML = shuffled.map(o=>{
+    const isCorrect = o === currentQ.answer ? 'true' : 'false';
+    return `<button class="quiz-option" data-correct="${isCorrect}" onclick="answerQuiz(this)">${o}</button>`;
+  }).join('');
 }
 
-function escQ(s){ return s.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
-
-function answerQuiz(el, chosen, correct, hint){
+function answerQuiz(el){
   if(quizAnswered) return;
-  quizAnswered=true;
+  quizAnswered = true;
   document.querySelectorAll('.quiz-option').forEach(b=>b.style.pointerEvents='none');
-  if(chosen===correct){ el.classList.add('correct'); quizScore++; }
-  else {
+  if(el.dataset.correct === 'true'){
+    el.classList.add('correct');
+    quizScore++;
+  } else {
     el.classList.add('wrong');
-    document.querySelectorAll('.quiz-option').forEach(b=>{ if(b.textContent.trim()===correct) b.classList.add('correct'); });
+    document.querySelectorAll('.quiz-option').forEach(b=>{ if(b.dataset.correct==='true') b.classList.add('correct'); });
   }
   const hintEl = document.getElementById('quiz-hint');
-  hintEl.textContent = '💡 ' + hint;
-  hintEl.style.display='block';
-  document.getElementById('quiz-next-btn').style.display='block';
+  hintEl.textContent = '💡 ' + currentQ.hint;
+  hintEl.style.display = 'block';
+  document.getElementById('quiz-next-btn').style.display = 'block';
 }
 
 function quizNext(){
@@ -859,8 +861,8 @@ function renderCard(){
   document.getElementById('fc-telugu-word').textContent = word.telugu;
   document.getElementById('fc-translit').textContent = word.transliteration;
   document.getElementById('fc-pronun').textContent = '🔊 ' + word.pronunciation_hint;
-  document.getElementById('fc-ex-tel').textContent = word.example_sentence_telugu;
-  document.getElementById('fc-ex-eng').textContent = word.example_sentence_english;
+  document.getElementById('fc-ex-eng').textContent = '"' + word.example_sentence_english + '"';
+  document.getElementById('fc-ex-tel').textContent = word.transliteration ? '(' + word.example_sentence_telugu + ')' : '';
   updateSessionInfo();
 }
 
@@ -1091,7 +1093,7 @@ function initChat(){
     prompt.style.display='none';
     msgs.style.display='flex';
     if(S.chatHistory.length===0){
-      appendBubble('tutor',"నమస్కారం! I'm Priya, your Telugu tutor. 😊\n\nI can help you:\n• Learn vocabulary and grammar\n• Practice sentences\n• Answer any question about Telugu\n\nTry asking: \"How do I say hello?\" or switch to Quiz mode and I'll test you!", true);
+      appendBubble('tutor',"Namaskāram! I'm Priya, your Telugu speaking coach. 😊\n\nI'll teach you to SPEAK Telugu — no script reading needed. Everything in pronunciation you can say out loud.\n\nTry asking: \"How do I say I'm hungry?\" or \"How do I order food?\" — or switch to Quiz mode and I'll test your spoken phrases!", true);
     } else {
       // Restore chat
       S.chatHistory.forEach(m=>appendBubble(m.role,m.content,m.role==='assistant'));
