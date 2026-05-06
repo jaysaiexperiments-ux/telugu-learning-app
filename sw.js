@@ -1,4 +1,4 @@
-const CACHE = 'telugu-v1';
+const CACHE = 'telugu-v2';
 const ASSETS = ['./', './index.html', './words.js'];
 
 self.addEventListener('install', e => {
