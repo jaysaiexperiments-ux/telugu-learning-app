@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>తెలుగు · Telugu Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #05090f;
+  --surface:   #0d1b2e;
+  --surface2:  #122030;
+  --surface3:  #192d45;
+  --gold:      #c9a84c;
+  --gold-dim:  #7a6128;
+  --gold-glow: rgba(201,168,76,0.18);
+  --gold-text: #e8c96d;
+  --text:      #dde6f5;
+  --text-muted:#5a7a99;
+  --border:    rgba(201,168,76,0.12);
+  --success:   #22c55e;
+  --danger:    #ef4444;
+  --accent:    #4a8fd4;
+  --radius:    14px;
+  --nav-h:     64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+
+/* ── SCROLLBARS ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+
+/* ── BACKGROUND TEXTURE ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%,rgba(201,168,76,0.04) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 90%,rgba(74,143,212,0.04) 0%,transparent 70%);
+}
+/* Ambient Telugu script bg */
+body::after{
+  content:'అ ఆ ఇ క గ చ జ న మ ర';
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  font-family:'Noto Sans Telugu',sans-serif;font-size:120px;font-weight:700;
+  color:rgba(201,168,76,0.025);line-height:1.2;letter-spacing:20px;
+  pointer-events:none;z-index:0;word-spacing:30px;
+  white-space:pre-wrap;overflow:hidden;
+}
+
+/* ── LAYOUT ── */
+#app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+
+/* ── BANNER ── */
+#daily-banner{
+  background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;text-align:center;font-size:13px;color:var(--gold-text);
+  display:none;align-items:center;justify-content:center;gap:8px;
+}
+#daily-banner.show{display:flex}
+#daily-banner button{background:none;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:2px 12px;font-size:12px;cursor:pointer}
+
+/* ── HEADER ── */
+#app-header{
+  padding:14px 20px 10px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+#app-title{
+  font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;
+  color:var(--gold-text);letter-spacing:0.5px;text-align:center;
+  display:flex;flex-direction:column;line-height:1;gap:1px;
+}
+#app-title span{font-size:10px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase}
+.header-badge{
+  display:flex;align-items:center;gap:5px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:20px;padding:5px 12px;
+  font-size:13px;font-weight:600;min-width:64px;justify-content:center;
+}
+#badge-streak{color:#ff6b35}
+#badge-xp{color:var(--gold-text)}
+.badge-icon{font-size:15px}
+
+/* ── MAIN ── */
+#main{flex:1;overflow:hidden;position:relative}
+.view{position:absolute;inset:0;overflow-y:auto;padding:20px 20px calc(var(--nav-h) + 20px);display:none}
+.view.active{display:block}
+
+/* ── BOTTOM NAV ── */
+#bottom-nav{
+  height:var(--nav-h);display:flex;border-top:1px solid var(--border);
+  background:rgba(5,9,15,0.95);backdrop-filter:blur(20px);flex-shrink:0;
+  position:relative;z-index:10;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;background:none;border:none;color:var(--text-muted);cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;
+  transition:color 0.2s;letter-spacing:0.3px;padding-bottom:6px;
+}
+.nav-btn .nav-icon{font-size:20px;line-height:1;transition:transform 0.2s}
+.nav-btn.active{color:var(--gold-text)}
+.nav-btn.active .nav-icon{transform:scale(1.15)}
+
+/* ── CARDS ── */
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;
+}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-body{padding:18px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--gold-text);margin-bottom:16px}
+
+/* ── FLASHCARD (3D flip) ── */
+#flashcard-wrap{perspective:1200px;margin:0 auto;max-width:440px;height:280px;cursor:pointer}
+#flashcard{
+  width:100%;height:100%;position:relative;transform-style:preserve-3d;
+  transition:transform 0.55s cubic-bezier(0.4,0,0.2,1);
+}
+#flashcard.flipped{transform:rotateY(180deg)}
+.fc-face{
+  position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;border:1px solid var(--border);
+}
+#fc-front{
+  background:linear-gradient(145deg,var(--surface),var(--surface2));
+}
+#fc-back{
+  background:linear-gradient(145deg,var(--surface2),#0f2540);
+  transform:rotateY(180deg);
+}
+.fc-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;font-weight:500}
+.fc-english{font-size:26px;font-weight:600;text-align:center;color:var(--text);line-height:1.3}
+.fc-telugu{font-family:'Noto Sans Telugu',sans-serif;font-size:36px;font-weight:700;color:var(--gold-text);text-align:center;line-height:1.4;text-shadow:0 0 30px rgba(201,168,76,0.3)}
+.fc-translit{font-size:16px;color:var(--accent);margin-top:6px;font-style:italic}
+.fc-pronun{font-size:12px;color:var(--text-muted);margin-top:4px}
+.fc-example{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:center;width:100%}
+.fc-ex-tel{font-family:'Noto Sans Telugu',sans-serif;font-size:14px;color:var(--text);line-height:1.6}
+.fc-ex-eng{font-size:12px;color:var(--text-muted);margin-top:2px}
+.fc-tap-hint{font-size:12px;color:var(--text-muted);margin-top:16px;opacity:0.7}
+
+/* ── RATING BUTTONS ── */
+#rating-row{display:flex;gap:8px;margin-top:16px;justify-content:center}
+.rating-btn{
+  flex:1;max-width:80px;padding:10px 4px;border-radius:10px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text);font-size:11px;font-weight:600;
+  cursor:pointer;transition:all 0.15s;text-align:center;font-family:'DM Sans',sans-serif;
+}
+.rating-btn:hover{transform:translateY(-2px);border-color:var(--gold)}
+.rating-btn.r1{border-color:rgba(239,68,68,0.4);color:#ef4444}
+.rating-btn.r2{border-color:rgba(249,115,22,0.4);color:#f97316}
+.rating-btn.r3{border-color:rgba(234,179,8,0.4);color:#eab308}
+.rating-btn.r4{border-color:rgba(34,197,94,0.4);color:#22c55e}
+.rating-btn.r5{border-color:rgba(74,143,212,0.4);color:var(--accent)}
+.rating-btn .r-num{font-size:18px;display:block;margin-bottom:2px}
+
+/* ── SESSION PROGRESS ── */
+#session-progress-bar{height:3px;background:var(--surface3);border-radius:2px;margin:16px 0 8px;overflow:hidden}
+#session-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width 0.4s ease}
+#session-info{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:16px}
+
+/* ── PLACEMENT QUIZ ── */
+#quiz-wrap{max-width:480px;margin:0 auto}
+#quiz-header{text-align:center;margin-bottom:28px}
+#quiz-header h2{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold-text);margin-bottom:6px}
+#quiz-header p{color:var(--text-muted);font-size:14px}
+#quiz-q-num{font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:8px;letter-spacing:1px}
+#quiz-question{font-size:18px;font-weight:600;text-align:center;margin-bottom:24px;line-height:1.4}
+#quiz-options{display:flex;flex-direction:column;gap:10px}
+.quiz-option{
+  padding:14px 18px;border-radius:12px;border:1px solid var(--border);
+  background:var(--surface);cursor:pointer;transition:all 0.15s;font-size:15px;
+  font-family:'Noto Sans Telugu',sans-serif;
+}
+.quiz-option:hover{border-color:var(--gold);background:var(--surface2)}
+.quiz-option.correct{border-color:var(--success);background:rgba(34,197,94,0.1);color:var(--success)}
+.quiz-option.wrong{border-color:var(--danger);background:rgba(239,68,68,0.1);color:var(--danger)}
+#quiz-hint{margin-top:14px;padding:12px 16px;background:rgba(201,168,76,0.08);border-radius:10px;border:1px solid var(--border);font-size:13px;color:var(--text-muted);display:none}
+#quiz-next-btn{
+  margin-top:18px;width:100%;padding:14px;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  color:#0d1b2e;font-size:15px;font-weight:700;border:none;cursor:pointer;
+  display:none;font-family:'DM Sans',sans-serif;
+}
+#quiz-progress-bar{height:3px;background:var(--surface3);border-radius:2px;margin-bottom:24px;overflow:hidden}
+#quiz-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.4s}
+
+/* ── MODULE SELECTOR ── */
+#module-bar{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;-ms-overflow-style:none;scrollbar-width:none}
+#module-bar::-webkit-scrollbar{display:none}
+.module-pill{
+  white-space:nowrap;padding:7px 14px;border-radius:20px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text-muted);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all 0.15s;flex-shrink:0;
+}
+.module-pill.active{background:rgba(201,168,76,0.12);border-color:var(--gold);color:var(--gold-text)}
+.module-pill.locked{opacity:0.4;cursor:not-allowed}
+
+/* ── SESSION COMPLETE ── */
+#session-complete{text-align:center;display:none;padding:20px}
+#session-complete h2{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--gold-text);margin-bottom:8px}
+#session-complete .session-stats{display:flex;justify-content:center;gap:24px;margin:20px 0}
+.sess-stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.sess-stat-val{font-size:28px;font-weight:700;color:var(--gold-text)}
+.sess-stat-lbl{font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+.primary-btn{
+  padding:14px 32px;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  color:#0d1b2e;font-size:15px;font-weight:700;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:transform 0.15s;
+}
+.primary-btn:hover{transform:translateY(-1px)}
+.secondary-btn{
+  padding:10px 24px;border-radius:12px;border:1px solid var(--border);
+  background:none;color:var(--text-muted);font-size:14px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;margin-top:10px;
+}
+
+/* ── NO CARDS ── */
+#no-cards{text-align:center;padding:40px 20px;display:none}
+#no-cards .big-emoji{font-size:48px;margin-bottom:16px}
+#no-cards h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold-text);margin-bottom:8px}
+#no-cards p{color:var(--text-muted);font-size:14px}
+
+/* ── MINI LESSON ── */
+#mini-lesson{background:rgba(201,168,76,0.05);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:none}
+#mini-lesson h4{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-text);margin-bottom:8px}
+#mini-lesson p{font-size:13px;color:var(--text-muted);line-height:1.7}
+#mini-lesson .telugu-ex{font-family:'Noto Sans Telugu',sans-serif;font-size:18px;color:var(--gold-text);display:block;margin:8px 0 4px}
+.lesson-close{float:right;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px}
+
+/* ── CHAT TAB ── */
+#chat-view{display:flex;flex-direction:column;padding:0}
+#chat-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#chat-header-info{display:flex;align-items:center;gap:12px}
+#tutor-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Noto Sans Telugu',sans-serif;font-size:16px;font-weight:700;color:#0d1b2e}
+#tutor-name{font-weight:600;font-size:15px;color:var(--text)}
+#tutor-status{font-size:11px;color:var(--success)}
+#chat-settings-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;padding:6px}
+#chat-mode-bar{display:flex;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none;flex-shrink:0}
+#chat-mode-bar::-webkit-scrollbar{display:none}
+.mode-pill{
+  white-space:nowrap;padding:6px 14px;border-radius:20px;border:1px solid var(--border);
+  background:none;color:var(--text-muted);font-size:12px;font-weight:500;cursor:pointer;
+  transition:all 0.15s;font-family:'DM Sans',sans-serif;
+}
+.mode-pill.active{background:rgba(201,168,76,0.12);border-color:var(--gold);color:var(--gold-text)}
+#chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0}
+.bubble-wrap{display:flex;flex-direction:column;max-width:82%}
+.bubble-wrap.user{align-self:flex-end;align-items:flex-end}
+.bubble-wrap.tutor{align-self:flex-start;align-items:flex-start}
+.bubble{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.6}
+.bubble.user{background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.1));border:1px solid rgba(201,168,76,0.25);color:var(--text);border-bottom-right-radius:4px}
+.bubble.tutor{background:var(--surface);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px}
+.bubble .telugu-line{font-family:'Noto Sans Telugu',sans-serif;font-size:16px;color:var(--gold-text);display:block;margin:4px 0}
+.bubble .translit-line{font-size:12px;color:var(--accent);font-style:italic}
+.bubble-time{font-size:10px;color:var(--text-muted);margin-top:3px;padding:0 4px}
+.typing-bubble{display:flex;gap:5px;padding:14px 18px;align-items:center}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--text-muted);animation:typing 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-6px);opacity:1}}
+#chat-input-wrap{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;flex-shrink:0}
+#chat-input{
+  flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:22px;
+  padding:10px 16px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;
+  resize:none;max-height:100px;line-height:1.5;outline:none;
+}
+#chat-input:focus{border-color:var(--gold-dim)}
+#chat-send-btn{
+  width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:transform 0.15s;font-size:18px;
+}
+#chat-send-btn:hover{transform:scale(1.05)}
+#api-key-prompt{padding:24px;text-align:center;display:none}
+#api-key-prompt p{color:var(--text-muted);font-size:14px;margin-bottom:14px;line-height:1.6}
+#api-key-prompt button{padding:10px 24px;border-radius:10px;background:var(--gold);color:#0d1b2e;border:none;font-size:14px;font-weight:700;cursor:pointer}
+
+/* ── PROGRESS TAB ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;display:flex;flex-direction:column;gap:4px;
+}
+.stat-icon{font-size:22px;margin-bottom:4px}
+.stat-value{font-size:28px;font-weight:700;color:var(--gold-text);font-family:'Cormorant Garamond',serif}
+.stat-label{font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+.stat-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+#chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px}
+#chart-wrap h3{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-text);margin-bottom:12px}
+#accuracy-chart{width:100%;height:120px;display:block}
+#upcoming-reviews{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px}
+#upcoming-reviews h3{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-text);margin-bottom:12px}
+.review-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.review-item:last-child{border-bottom:none}
+.review-word{font-family:'Noto Sans Telugu',sans-serif;color:var(--text)}
+.review-time{color:var(--text-muted);font-size:11px}
+#module-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.module-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:14px;position:relative;overflow:hidden;
+}
+.module-card.locked{opacity:0.5}
+.module-card h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.module-card p{font-size:11px;color:var(--text-muted)}
+.module-card .lock-icon{position:absolute;top:12px;right:12px;font-size:16px;opacity:0.6}
+.module-card .prog-bar{height:3px;background:var(--surface3);border-radius:2px;margin-top:8px;overflow:hidden}
+.module-card .prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.5s}
+
+/* ── MODALS ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(5,9,15,0.85);backdrop-filter:blur(8px);
+  z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  padding:24px;width:100%;max-width:400px;
+}
+.modal-box h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold-text);margin-bottom:6px}
+.modal-box p{color:var(--text-muted);font-size:13px;margin-bottom:18px;line-height:1.6}
+.modal-input{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;
+  outline:none;margin-bottom:14px;
+}
+.modal-input:focus{border-color:var(--gold-dim)}
+.modal-row{display:flex;gap:10px}
+.modal-cancel{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif}
+.modal-save{flex:2;padding:12px;border-radius:10px;background:var(--gold);color:#0d1b2e;border:none;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── XP TOAST ── */
+#xp-toast{
+  position:fixed;top:80px;right:16px;background:var(--surface);border:1px solid var(--gold);
+  border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--gold-text);
+  z-index:200;opacity:0;transform:translateY(-10px);transition:all 0.3s;pointer-events:none;
+}
+#xp-toast.show{opacity:1;transform:translateY(0)}
+
+/* ── RESULT QUIZ ── */
+#quiz-result{text-align:center;display:none;padding:20px}
+#quiz-result h2{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--gold-text);margin-bottom:8px}
+#quiz-result .level-badge{display:inline-block;padding:8px 24px;border-radius:20px;border:1px solid var(--gold);color:var(--gold-text);font-size:16px;font-weight:600;margin:12px 0;background:rgba(201,168,76,0.1)}
+#quiz-result p{color:var(--text-muted);font-size:14px;margin-bottom:20px;line-height:1.7}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.fade-in{animation:fadeIn 0.3s ease forwards}
+.pop{animation:pop 0.3s ease}
+
+/* ── RESPONSIVE ── */
+@media(min-width:600px){
+  .view{padding:24px calc((100% - 480px)/2) calc(var(--nav-h)+24px)}
+  #chat-messages{padding:20px calc((100% - 480px)/2)}
+  #chat-input-wrap{padding:14px calc((100% - 480px)/2)}
+}
+
+/* ── SETTINGS TAB ── */
+.settings-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border-bottom:none}
+.settings-label{font-size:14px;font-weight:500}
+.settings-sub{font-size:12px;color:var(--text-muted);margin-top:2px}
+.settings-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:90px;text-align:center;outline:none}
+.danger-btn{padding:8px 16px;border-radius:8px;border:1px solid var(--danger);color:var(--danger);background:none;font-size:13px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Banner -->
+  <div id="daily-banner">
+    <span>🌟 Welcome back! Ready to practice Telugu today?</span>
+    <button onclick="document.getElementById('daily-banner').classList.remove('show')">✕</button>
+  </div>
+
+  <!-- Header -->
+  <header id="app-header">
+    <div class="header-badge" id="badge-streak">
+      <span class="badge-icon">🔥</span>
+      <span id="streak-count">0</span>d
+    </div>
+    <div id="app-title">
+      తెలుగు
+      <span>Telugu Learning</span>
+    </div>
+    <div class="header-badge" id="badge-xp">
+      <span class="badge-icon">⚡</span>
+      <span id="xp-count">0</span>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <div id="main">
+    <!-- LEARN VIEW -->
+    <div id="learn-view" class="view active">
+      <!-- Placement Quiz -->
+      <div id="quiz-section">
+        <div id="quiz-wrap">
+          <div id="quiz-header">
+            <h2>Placement Quiz</h2>
+            <p>10 quick questions to find your starting level. No Telugu experience required!</p>
+          </div>
+          <div id="quiz-progress-bar"><div id="quiz-progress-fill" style="width:0%"></div></div>
+          <div id="quiz-q-num">Question 1 of 10</div>
+          <div id="quiz-question"></div>
+          <div id="quiz-options"></div>
+          <div id="quiz-hint"></div>
+          <button id="quiz-next-btn" onclick="quizNext()">Next →</button>
+        </div>
+        <div id="quiz-result">
+          <div style="font-size:56px;margin-bottom:12px">🎉</div>
+          <h2>Quiz Complete!</h2>
+          <div class="level-badge" id="result-level-badge"></div>
+          <p id="result-msg"></p>
+          <button class="primary-btn" onclick="startLearning()">Start Learning →</button>
+        </div>
+      </div>
+
+      <!-- Learn Session -->
+      <div id="session-section" style="display:none">
+        <!-- Module bar -->
+        <div id="module-bar"></div>
+        <!-- Mini lesson -->
+        <div id="mini-lesson">
+          <button class="lesson-close" onclick="document.getElementById('mini-lesson').style.display='none'">✕</button>
+          <h4 id="lesson-title"></h4>
+          <div id="lesson-body"></div>
+        </div>
+        <!-- Session progress -->
+        <div id="session-progress-bar"><div id="session-progress-fill" style="width:0%"></div></div>
+        <div id="session-info">
+          <span id="cards-remaining">0 cards left</span>
+          <span id="session-accuracy">Accuracy: —</span>
+        </div>
+        <!-- Flashcard -->
+        <div id="flashcard-wrap" onclick="flipCard()">
+          <div id="flashcard">
+            <div class="fc-face" id="fc-front">
+              <div class="fc-label">Translate to Telugu</div>
+              <div class="fc-english" id="fc-english-word"></div>
+              <div class="fc-tap-hint">Tap to reveal ↓</div>
+            </div>
+            <div class="fc-face" id="fc-back">
+              <div class="fc-label">Telugu</div>
+              <div class="fc-telugu" id="fc-telugu-word"></div>
+              <div class="fc-translit" id="fc-translit"></div>
+              <div class="fc-pronun" id="fc-pronun"></div>
+              <div class="fc-example">
+                <div class="fc-ex-tel" id="fc-ex-tel"></div>
+                <div class="fc-ex-eng" id="fc-ex-eng"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Rating -->
+        <div id="rating-row" style="display:none">
+          <button class="rating-btn r1" onclick="rateCard(1)"><span class="r-num">1</span>Again</button>
+          <button class="rating-btn r2" onclick="rateCard(2)"><span class="r-num">2</span>Hard</button>
+          <button class="rating-btn r3" onclick="rateCard(3)"><span class="r-num">3</span>Good</button>
+          <button class="rating-btn r4" onclick="rateCard(4)"><span class="r-num">4</span>Easy</button>
+          <button class="rating-btn r5" onclick="rateCard(5)"><span class="r-num">5</span>Perfect</button>
+        </div>
+        <!-- No cards -->
+        <div id="no-cards">
+          <div class="big-emoji">✅</div>
+          <h3>All done for today!</h3>
+          <p id="no-cards-msg">Your next review is scheduled. Come back tomorrow to keep your streak alive.</p>
+          <br>
+          <button class="primary-btn" style="margin-top:16px" onclick="showTab('progress')">See Progress →</button>
+        </div>
+        <!-- Session complete -->
+        <div id="session-complete">
+          <div style="font-size:48px;margin-bottom:12px">🎯</div>
+          <h2>Session Complete!</h2>
+          <div class="session-stats">
+            <div class="sess-stat"><span class="sess-stat-val" id="sc-cards">0</span><span class="sess-stat-lbl">Cards</span></div>
+            <div class="sess-stat"><span class="sess-stat-val" id="sc-accuracy">0%</span><span class="sess-stat-lbl">Accuracy</span></div>
+            <div class="sess-stat"><span class="sess-stat-val" id="sc-xp">+0</span><span class="sess-stat-lbl">XP</span></div>
+          </div>
+          <button class="primary-btn" onclick="startSession()">Study More →</button><br>
+          <button class="secondary-btn" onclick="showTab('progress')">View Progress</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT VIEW -->
+    <div id="chat-view" class="view" style="position:absolute;inset:0;overflow:hidden;display:none;flex-direction:column;padding:0">
+      <div id="chat-header">
+        <div id="chat-header-info">
+          <div id="tutor-avatar">ప్ర</div>
+          <div>
+            <div id="tutor-name">Priya • Telugu Tutor</div>
+            <div id="tutor-status">● Online</div>
+          </div>
+        </div>
+        <button id="chat-settings-btn" onclick="openApiModal()" title="API Settings">⚙️</button>
+      </div>
+      <div id="chat-mode-bar">
+        <button class="mode-pill active" onclick="setMode('explain',this)">📖 Explain</button>
+        <button class="mode-pill" onclick="setMode('quiz',this)">🧠 Quiz Me</button>
+        <button class="mode-pill" onclick="setMode('chat',this)">💬 Free Chat</button>
+        <button class="mode-pill" onclick="setMode('sentence',this)">✍️ Sentence Help</button>
+      </div>
+      <div id="api-key-prompt">
+        <p>To chat with Priya, enter your <strong>Anthropic API key</strong>.<br>It's stored only in your browser.</p>
+        <button onclick="openApiModal()">🔑 Add API Key</button>
+      </div>
+      <div id="chat-messages"></div>
+      <div id="chat-input-wrap">
+        <textarea id="chat-input" placeholder="Ask Priya anything in English or Telugu…" rows="1" onkeydown="chatKeydown(event)" oninput="autoResize(this)"></textarea>
+        <button id="chat-send-btn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+    <!-- PROGRESS VIEW -->
+    <div id="progress-view" class="view" style="display:none">
+      <div class="section-title">Your Progress</div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-value" id="p-streak">0</div><div class="stat-label">Day Streak</div></div>
+        <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value" id="p-xp">0</div><div class="stat-label">Total XP</div><div class="stat-sub" id="p-level">Beginner</div></div>
+        <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-value" id="p-words">0</div><div class="stat-label">Words Seen</div><div class="stat-sub">of 200</div></div>
+        <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-value" id="p-accuracy">—</div><div class="stat-label">Avg Accuracy</div><div class="stat-sub">last 7 days</div></div>
+      </div>
+      <div id="chart-wrap">
+        <h3>7-Day Accuracy</h3>
+        <canvas id="accuracy-chart"></canvas>
+      </div>
+      <div id="upcoming-reviews">
+        <h3>Upcoming Reviews</h3>
+        <div id="review-list"></div>
+      </div>
+      <div class="section-title" style="margin-top:4px">Modules</div>
+      <div id="module-grid"></div>
+      <!-- Settings -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><span style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold-text)">Settings</span></div>
+        <div class="card-body">
+          <div class="settings-row">
+            <div><div class="settings-label">API Key</div><div class="settings-sub">For AI chat tutor</div></div>
+            <button onclick="openApiModal()" style="padding:6px 14px;border-radius:8px;border:1px solid var(--gold);background:none;color:var(--gold-text);font-size:12px;cursor:pointer">Configure</button>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Notification Time</div><div class="settings-sub">Daily reminder</div></div>
+            <input type="time" class="settings-input" id="notif-time" value="08:00" onchange="saveNotifTime(this.value)">
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Reset Progress</div><div class="settings-sub">Clear all data</div></div>
+            <button class="danger-btn" onclick="confirmReset()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav id="bottom-nav">
+    <button class="nav-btn active" onclick="showTab('learn')" id="nav-learn">
+      <span class="nav-icon">📚</span>Learn
+    </button>
+    <button class="nav-btn" onclick="showTab('chat')" id="nav-chat">
+      <span class="nav-icon">💬</span>Chat
+    </button>
+    <button class="nav-btn" onclick="showTab('progress')" id="nav-progress">
+      <span class="nav-icon">📊</span>Progress
+    </button>
+  </nav>
+</div>
+
+<!-- API Modal -->
+<div class="modal-overlay" id="api-modal">
+  <div class="modal-box">
+    <h3>🔑 Anthropic API Key</h3>
+    <p>Your key is stored only in your browser's localStorage. Get yours at console.anthropic.com</p>
+    <input type="password" class="modal-input" id="api-key-input" placeholder="sk-ant-...">
+    <div class="modal-row">
+      <button class="modal-cancel" onclick="closeApiModal()">Cancel</button>
+      <button class="modal-save" onclick="saveApiKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- XP Toast -->
+<div id="xp-toast"></div>
+
+<script src="words.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+// CONSTANTS & CONFIG
+// ═══════════════════════════════════════════════════════
+
+const MODULES = [
+  { id:1, name:'Phonetics', desc:'Vowels & consonants', icon:'🔤', minLevel:0, wordGroups:[], lesson:{title:'Telugu Vowels',body:'Telugu has 16 vowels. The most common: <span class="telugu-ex">అ ఆ ఇ ఈ ఉ ఊ</span> Sound: a · aa · i · ee · u · oo<br>Consonants follow vowels to form syllables: <span class="telugu-ex">క కా కి కీ కు కూ</span>'} },
+  { id:2, name:'Survival', desc:'Greetings & basics', icon:'👋', minLevel:0, wordGroups:['greetings','numbers'], lesson:{title:'Say Hello',body:'Start every interaction with: <span class="telugu-ex">నమస్కారం</span> (namaskāram) — Hello<br>Reply to "how are you" with: <span class="telugu-ex">బాగున్నాను</span> (bāgunnānu) — I\'m fine'} },
+  { id:3, name:'Daily Life', desc:'Food, family, time', icon:'🏠', minLevel:1, wordGroups:['family','food','time'], lesson:{title:'SOV Word Order',body:'Telugu is Subject-Object-Verb:<br><span class="telugu-ex">నేను అన్నం తింటాను</span><br>I · rice · eat (= I eat rice)<br>The verb always comes last!'} },
+  { id:4, name:'Navigation', desc:'Body & directions', icon:'🗺️', minLevel:1, wordGroups:['body','directions'], lesson:{title:'Asking Where',body:'Use <span class="telugu-ex">ఎక్కడ</span> (ekkaḍa) for "where":<br><span class="telugu-ex">బాత్రూమ్ ఎక్కడ ఉంది?</span><br>Where is the bathroom?'} },
+  { id:5, name:'Emotions', desc:'Feelings & verbs', icon:'❤️', minLevel:1, wordGroups:['emotions','verbs_basic'], lesson:{title:'Express Feelings',body:'Add -గా (-ga) to make adverbs:<br><span class="telugu-ex">సంతోషంగా</span> = happily<br><span class="telugu-ex">నేను సంతోషంగా ఉన్నాను</span><br>I am (feeling) happy'} },
+  { id:6, name:'Advanced', desc:'Adjectives & more', icon:'🌟', minLevel:2, wordGroups:['adjectives_basic','daily_life'], lesson:{title:'Adjectives in Telugu',body:'Adjectives come before nouns:<br><span class="telugu-ex">పెద్ద ఇల్లు</span> = big house<br><span class="telugu-ex">మంచి మనిషి</span> = good person<br>No gender agreement needed!'} }
+];
+
+const PLACEMENT_QUESTIONS = [
+  { q:"The Telugu letter అ makes which sound?", options:["a (short, as in 'about')","aa (long, as in 'father')","i (as in 'bit')","u (as in 'book')"], answer:"a (short, as in 'about')", hint:"అ is the very first Telugu vowel — a short 'a' sound." },
+  { q:"What does నమస్కారం mean?", options:["Goodbye","Thank you","Hello / Greetings","Sorry"], answer:"Hello / Greetings", hint:"నమస్కారం (namaskāram) is the standard Telugu greeting." },
+  { q:"Telugu script is read in which direction?", options:["Right to left","Top to bottom","Bottom to top","Left to right"], answer:"Left to right", hint:"Like English, Telugu reads left to right." },
+  { q:"Which Telugu word means 'water'?", options:["అన్నం","కాఫీ","పాలు","నీరు"], answer:"నీరు", hint:"నీరు (nīru) means water — one of the first words to learn!" },
+  { q:"The suffix -గా (-ga) in Telugu typically means:", options:["I (first person)","The (article)","...ly (adverb suffix)","And (conjunction)"], answer:"...ly (adverb suffix)", hint:"వేగంగా = quickly, శాంతిగా = peacefully" },
+  { q:"Which word is Telugu for 'mother'?", options:["నాన్న","అక్క","తాత","అమ్మ"], answer:"అమ్మ", hint:"అమ్మ (amma) — you may have heard this before!" },
+  { q:"In Telugu sentences, the verb typically comes at the:", options:["Beginning","Middle","Before the subject","End (Subject-Object-Verb)"], answer:"End (Subject-Object-Verb)", hint:"నేను అన్నం తిన్నాను = I rice ate (I ate rice)" },
+  { q:"What does ధన్యవాదాలు mean?", options:["Sorry","Please","Welcome","Thank you"], answer:"Thank you", hint:"ధన్యవాదాలు (dhanyavādālu) is the formal thank you." },
+  { q:"Which Telugu word means 'five'?", options:["పది","ఒకటి","అయిదు","ఇరవై"], answer:"అయిదు", hint:"అయిదు (ayidu) = 5. పది = 10, ఇరవై = 20." },
+  { q:"The Telugu vowel ఇ sounds most like:", options:["'a' as in cat","'o' as in go","'u' as in cup","'ee' as in bee"], answer:"'ee' as in bee", hint:"ఇ makes a short 'i' / 'ee' sound, like 'bit' or 'bee'." }
+];
+
+const SYSTEM_PROMPT = `You are Priya, a warm and encouraging Telugu language tutor for native English speakers learning from scratch.
+
+Format ALL responses like this:
+1. Answer in English first (clear, concise)
+2. Telugu word/phrase in Telugu script on its own line
+3. Transliteration in parentheses on the next line
+
+Example format:
+"Water" in Telugu is:
+నీరు
+(nīru — sounds like "nee-roo")
+
+Example sentence: నాకు నీరు కావాలి (nākku nīru kāvāli) — I need water.
+
+Rules:
+- Always include Telugu script + transliteration + pronunciation hint
+- Always give at least one example sentence
+- Correct the user's Telugu gently: show the right form, briefly explain why
+- Keep explanations short and chunked — one concept at a time
+- When the user asks "how do I say X?", answer then ask them to try using it in a sentence
+- Use encouraging phrases: "Great try!", "Almost perfect!", "You're doing well!"
+- Never use linguistic jargon without explaining it
+- Adjust mode based on context: explain grammar in Explain mode, ask questions in Quiz mode, have natural conversation in Free Chat mode`;
+
+// ═══════════════════════════════════════════════════════
+// STATE MANAGEMENT
+// ═══════════════════════════════════════════════════════
+
+const DEFAULT_PROGRESS = {
+  level:0, xp:0, streak:0, last_visit:'', notification_time:'08:00',
+  new_cards_per_session:10,
+  session_stats:[] // [{date,accuracy,cards}]
+};
+
+const S = {
+  get cards(){ return JSON.parse(localStorage.getItem('srs_cards')||'{}'); },
+  set cards(v){ localStorage.setItem('srs_cards',JSON.stringify(v)); },
+  get progress(){ return JSON.parse(localStorage.getItem('user_progress')||JSON.stringify(DEFAULT_PROGRESS)); },
+  set progress(v){ localStorage.setItem('user_progress',JSON.stringify(v)); },
+  get placementDone(){ return localStorage.getItem('placement_done')==='true'; },
+  set placementDone(v){ localStorage.setItem('placement_done',String(v)); },
+  get chatHistory(){ return JSON.parse(localStorage.getItem('chat_history')||'[]'); },
+  set chatHistory(v){ localStorage.setItem('chat_history',JSON.stringify(v.slice(-40))); }, // keep last 40 msgs
+  get apiKey(){ return localStorage.getItem('api_key')||''; },
+  set apiKey(v){ localStorage.setItem('api_key',v); }
+};
+
+function today(){ return new Date().toISOString().split('T')[0]; }
+
+// ═══════════════════════════════════════════════════════
+// SM-2 ALGORITHM
+// ═══════════════════════════════════════════════════════
+
+function sm2Update(card, rating) {
+  let { interval=1, easeFactor=2.5, repetitions=0 } = card;
+  if (rating < 3) {
+    repetitions = 0;
+    interval = 1;
+  } else {
+    if (repetitions === 0) interval = 1;
+    else if (repetitions === 1) interval = 3;
+    else interval = Math.round(interval * easeFactor);
+    repetitions++;
+  }
+  easeFactor = Math.max(1.3, easeFactor + 0.1 - (5-rating)*(0.08+(5-rating)*0.02));
+  const next = new Date();
+  next.setDate(next.getDate() + interval);
+  return { interval, easeFactor, repetitions, nextReview:next.toISOString().split('T')[0], lastRating:rating };
+}
+
+function isDue(card){
+  if (!card.nextReview) return true;
+  return card.nextReview <= today();
+}
+
+function getAvailableWordIds(){
+  const p = S.progress;
+  const unlockedGroups = new Set();
+  MODULES.forEach(m => { if (p.level >= m.minLevel) m.wordGroups.forEach(g => unlockedGroups.add(g)); });
+  if (activeModule > 0) {
+    const mod = MODULES.find(m=>m.id===activeModule);
+    if (mod) return WORDS.filter(w=>mod.wordGroups.includes(w.semantic_group)).map(w=>w.id);
+  }
+  return WORDS.filter(w=>unlockedGroups.has(w.semantic_group)).map(w=>w.id);
+}
+
+function buildSession(){
+  const cards = S.cards;
+  const availIds = getAvailableWordIds();
+  const p = S.progress;
+  const maxNew = p.new_cards_per_session || 10;
+  const dueCards = availIds.filter(id=>cards[id]&&isDue(cards[id]));
+  const newIds = availIds.filter(id=>!cards[id]);
+  const session = [...dueCards];
+  const newToAdd = Math.min(maxNew, Math.max(0, 20 - dueCards.length), newIds.length);
+  for(let i=0;i<newToAdd;i++) session.push(newIds[i]);
+  // shuffle
+  return session.sort(()=>Math.random()-0.5).slice(0,20);
+}
+
+// ═══════════════════════════════════════════════════════
+// PLACEMENT QUIZ
+// ═══════════════════════════════════════════════════════
+
+let quizIndex = 0, quizScore = 0, quizAnswered = false;
+
+function renderQuiz(){
+  const q = PLACEMENT_QUESTIONS[quizIndex];
+  document.getElementById('quiz-q-num').textContent = `Question ${quizIndex+1} of ${PLACEMENT_QUESTIONS.length}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-progress-fill').style.width = (quizIndex/PLACEMENT_QUESTIONS.length*100)+'%';
+  document.getElementById('quiz-hint').style.display='none';
+  document.getElementById('quiz-hint').textContent='';
+  document.getElementById('quiz-next-btn').style.display='none';
+  quizAnswered = false;
+  const opts = document.getElementById('quiz-options');
+  // shuffle options while tracking correct answer
+  const shuffled = [...q.options].sort(()=>Math.random()-0.5);
+  opts.innerHTML = shuffled.map(o=>`<button class="quiz-option" onclick="answerQuiz(this,'${escQ(o)}','${escQ(q.answer)}','${escQ(q.hint)}')">${o}</button>`).join('');
+}
+
+function escQ(s){ return s.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+
+function answerQuiz(el, chosen, correct, hint){
+  if(quizAnswered) return;
+  quizAnswered=true;
+  document.querySelectorAll('.quiz-option').forEach(b=>b.style.pointerEvents='none');
+  if(chosen===correct){ el.classList.add('correct'); quizScore++; }
+  else {
+    el.classList.add('wrong');
+    document.querySelectorAll('.quiz-option').forEach(b=>{ if(b.textContent.trim()===correct) b.classList.add('correct'); });
+  }
+  const hintEl = document.getElementById('quiz-hint');
+  hintEl.textContent = '💡 ' + hint;
+  hintEl.style.display='block';
+  document.getElementById('quiz-next-btn').style.display='block';
+}
+
+function quizNext(){
+  quizIndex++;
+  if(quizIndex >= PLACEMENT_QUESTIONS.length){ finishQuiz(); return; }
+  renderQuiz();
+}
+
+function finishQuiz(){
+  S.placementDone = true;
+  let level = 0;
+  if(quizScore >= 7) level = 2;
+  else if(quizScore >= 4) level = 1;
+  const p = S.progress;
+  p.level = level;
+  p.xp += 50;
+  S.progress = p;
+  const labels = ['Beginner','Elementary','Intermediate'];
+  const msgs = [
+    "You're starting fresh — perfect! We'll begin with Telugu script basics and the 50 most essential words. You'll be surprised how fast you progress.",
+    "Great foundation! You have some exposure to Telugu patterns. We'll fast-track you through survival vocabulary into daily conversations.",
+    "Impressive! You have solid Telugu intuition. We'll start you on vocabulary-building and sentence patterns right away."
+  ];
+  document.getElementById('quiz-wrap').style.display='none';
+  const res = document.getElementById('quiz-result');
+  res.style.display='block';
+  document.getElementById('result-level-badge').textContent = labels[level] + ' · ' + quizScore + '/10';
+  document.getElementById('result-msg').textContent = msgs[level];
+  updateHeader();
+}
+
+function startLearning(){
+  document.getElementById('quiz-section').style.display='none';
+  document.getElementById('session-section').style.display='block';
+  buildModuleBar();
+  startSession();
+}
+
+// ═══════════════════════════════════════════════════════
+// LEARN SESSION
+// ═══════════════════════════════════════════════════════
+
+let sessionCards = [], sessionIndex = 0, sessionCorrect = 0, cardFlipped = false;
+let activeModule = 0; // 0 = all unlocked
+
+function buildModuleBar(){
+  const p = S.progress;
+  const bar = document.getElementById('module-bar');
+  bar.innerHTML = `<button class="module-pill active" onclick="selectModule(0,this)">🌟 All</button>` +
+    MODULES.map(m=>{
+      const locked = p.level < m.minLevel;
+      return `<button class="module-pill${locked?' locked':''}" onclick="${locked?'':``selectModule(${m.id},this)``}">${m.icon} ${m.name}</button>`;
+    }).join('');
+}
+
+function selectModule(id, el){
+  activeModule = id;
+  document.querySelectorAll('.module-pill').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  if(id > 0){
+    const mod = MODULES.find(m=>m.id===id);
+    if(mod && mod.lesson){
+      document.getElementById('lesson-title').textContent = mod.lesson.title;
+      document.getElementById('lesson-body').innerHTML = mod.lesson.body;
+      document.getElementById('mini-lesson').style.display='block';
+    }
+  }
+  startSession();
+}
+
+function startSession(){
+  const ids = buildSession();
+  if(ids.length === 0){
+    document.getElementById('flashcard-wrap').style.display='none';
+    document.getElementById('rating-row').style.display='none';
+    document.getElementById('session-complete').style.display='none';
+    document.getElementById('no-cards').style.display='block';
+    // show next review time
+    const cards = S.cards;
+    const future = Object.values(cards).filter(c=>c.nextReview>today()).sort((a,b)=>a.nextReview.localeCompare(b.nextReview));
+    if(future.length){
+      document.getElementById('no-cards-msg').textContent = `Next review: ${future[0].nextReview}. You're on a roll — come back then!`;
+    }
+    return;
+  }
+  sessionCards = ids;
+  sessionIndex = 0;
+  sessionCorrect = 0;
+  cardFlipped = false;
+  document.getElementById('no-cards').style.display='none';
+  document.getElementById('session-complete').style.display='none';
+  document.getElementById('flashcard-wrap').style.display='block';
+  document.getElementById('rating-row').style.display='none';
+  renderCard();
+  updateSessionInfo();
+}
+
+function renderCard(){
+  const word = WORDS.find(w=>w.id===sessionCards[sessionIndex]);
+  if(!word) return;
+  document.getElementById('flashcard').classList.remove('flipped');
+  cardFlipped = false;
+  document.getElementById('rating-row').style.display='none';
+  document.getElementById('fc-english-word').textContent = word.english;
+  document.getElementById('fc-telugu-word').textContent = word.telugu;
+  document.getElementById('fc-translit').textContent = word.transliteration;
+  document.getElementById('fc-pronun').textContent = '🔊 ' + word.pronunciation_hint;
+  document.getElementById('fc-ex-tel').textContent = word.example_sentence_telugu;
+  document.getElementById('fc-ex-eng').textContent = word.example_sentence_english;
+  updateSessionInfo();
+}
+
+function flipCard(){
+  if(cardFlipped) return;
+  cardFlipped = true;
+  document.getElementById('flashcard').classList.add('flipped');
+  setTimeout(()=>{ document.getElementById('rating-row').style.display='flex'; },300);
+}
+
+function rateCard(rating){
+  const wordId = sessionCards[sessionIndex];
+  const cards = S.cards;
+  const existing = cards[wordId] || { interval:1, easeFactor:2.5, repetitions:0 };
+  cards[wordId] = sm2Update(existing, rating);
+  S.cards = cards;
+  if(rating >= 3) sessionCorrect++;
+  // XP
+  const xpGain = [0,2,4,6,8,10][rating];
+  awardXP(xpGain);
+  sessionIndex++;
+  if(sessionIndex >= sessionCards.length){ finishSession(); return; }
+  renderCard();
+  updateSessionInfo();
+}
+
+function updateSessionInfo(){
+  const total = sessionCards.length;
+  const done = sessionIndex;
+  const pct = total > 0 ? (done/total*100) : 0;
+  document.getElementById('session-progress-fill').style.width = pct+'%';
+  document.getElementById('cards-remaining').textContent = `${total-done} card${total-done!==1?'s':''} left`;
+  const acc = done > 0 ? Math.round(sessionCorrect/done*100) : 0;
+  document.getElementById('session-accuracy').textContent = done > 0 ? `Accuracy: ${acc}%` : 'Accuracy: —';
+}
+
+function finishSession(){
+  const total = sessionCards.length;
+  const acc = total > 0 ? Math.round(sessionCorrect/total*100) : 0;
+  const xpEarned = sessionCorrect * 5;
+  // save stat
+  const p = S.progress;
+  const stat = { date:today(), accuracy:acc, cards:total };
+  p.session_stats = [...(p.session_stats||[]).filter(s=>s.date!==today()), stat].slice(-30);
+  // auto-pace: adjust new cards
+  if(acc > 85) p.new_cards_per_session = Math.min(20, (p.new_cards_per_session||10)+2);
+  else if(acc < 60) p.new_cards_per_session = Math.max(3, (p.new_cards_per_session||10)-2);
+  S.progress = p;
+  document.getElementById('flashcard-wrap').style.display='none';
+  document.getElementById('rating-row').style.display='none';
+  document.getElementById('session-complete').style.display='block';
+  document.getElementById('sc-cards').textContent = total;
+  document.getElementById('sc-accuracy').textContent = acc+'%';
+  document.getElementById('sc-xp').textContent = '+'+xpEarned;
+  updateHeader();
+}
+
+// ═══════════════════════════════════════════════════════
+// STREAK & XP
+// ═══════════════════════════════════════════════════════
+
+function checkStreak(){
+  const p = S.progress;
+  const t = today();
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yStr = yesterday.toISOString().split('T')[0];
+  if(p.last_visit === t) return; // already counted today
+  if(p.last_visit === yStr){ p.streak = (p.streak||0)+1; }
+  else if(p.last_visit && p.last_visit !== t){ p.streak = 1; }
+  else if(!p.last_visit){ p.streak = 1; }
+  p.last_visit = t;
+  S.progress = p;
+  // Show banner if coming back
+  if(p.streak > 1) document.getElementById('daily-banner').classList.add('show');
+}
+
+function awardXP(amount){
+  if(amount<=0) return;
+  const p = S.progress;
+  p.xp = (p.xp||0) + amount;
+  S.progress = p;
+  updateHeader();
+  showXPToast('+'+amount+' XP');
+}
+
+function showXPToast(msg){
+  const t = document.getElementById('xp-toast');
+  t.textContent = '⚡ '+msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function updateHeader(){
+  const p = S.progress;
+  document.getElementById('streak-count').textContent = p.streak||0;
+  document.getElementById('xp-count').textContent = (p.xp||0).toLocaleString();
+}
+
+// ═══════════════════════════════════════════════════════
+// CHAT TAB
+// ═══════════════════════════════════════════════════════
+
+let chatMode = 'explain';
+let chatTyping = false;
+
+function setMode(mode, el){
+  chatMode = mode;
+  document.querySelectorAll('.mode-pill').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const modeMsg = {
+    explain:"📖 Explain mode: Ask me anything about Telugu — grammar, pronunciation, meaning.",
+    quiz:"🧠 Quiz mode: I'll test you on what you've been learning. Ready?",
+    chat:"💬 Free chat: Let's have a conversation. Try using some Telugu words!",
+    sentence:"✍️ Sentence help: Type a sentence (in English or broken Telugu) and I'll help you say it correctly."
+  };
+  appendBubble('tutor', modeMsg[mode], true);
+}
+
+function chatKeydown(e){
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,100)+'px';
+}
+
+async function sendMessage(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  if(!S.apiKey){ openApiModal(); return; }
+  input.value=''; input.style.height='auto';
+  appendBubble('user', text, false);
+  showTyping();
+  const history = S.chatHistory;
+  history.push({role:'user',content:buildUserContent(text)});
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'x-api-key':S.apiKey,
+        'anthropic-version':'2023-06-01',
+        'content-type':'application/json',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1024,
+        system:SYSTEM_PROMPT,
+        messages:history
+      })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error?.message||'API error');
+    const reply = data.content[0].text;
+    history.push({role:'assistant',content:reply});
+    S.chatHistory = history;
+    hideTyping();
+    appendBubble('tutor', reply, true);
+    awardXP(3);
+  } catch(err){
+    hideTyping();
+    appendBubble('tutor', '⚠️ Error: '+err.message+'. Check your API key in settings.', false);
+  }
+}
+
+function buildUserContent(text){
+  const p = S.progress;
+  const levels = ['Beginner','Elementary','Intermediate'];
+  return `[User level: ${levels[p.level]||'Beginner'}, mode: ${chatMode}]\n${text}`;
+}
+
+function appendBubble(role, text, formatTelugu){
+  const msgs = document.getElementById('chat-messages');
+  const wrap = document.createElement('div');
+  wrap.className='bubble-wrap '+role;
+  const bubble = document.createElement('div');
+  bubble.className='bubble '+role;
+  if(formatTelugu){
+    bubble.innerHTML = formatMessage(text);
+  } else {
+    bubble.textContent = text;
+  }
+  wrap.appendChild(bubble);
+  const time = document.createElement('div');
+  time.className='bubble-time';
+  time.textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  wrap.appendChild(time);
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function formatMessage(text){
+  // Detect Telugu script and wrap in Telugu font class
+  return text
+    .replace(/\n/g,'<br>')
+    .replace(/([ఀ-౿]+)/g,'<span class="telugu-line">$1</span>')
+    .replace(/\(([a-zA-Zāāīūṭḍṇśṣṭḍ\s\-·]+)\)/g,'<span class="translit-line">($1)</span>');
+}
+
+let typingEl = null;
+function showTyping(){
+  if(typingEl) return;
+  const msgs = document.getElementById('chat-messages');
+  const wrap = document.createElement('div');
+  wrap.className='bubble-wrap tutor';
+  const bubble = document.createElement('div');
+  bubble.className='bubble tutor typing-bubble';
+  bubble.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  wrap.appendChild(bubble);
+  msgs.appendChild(wrap);
+  typingEl = wrap;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function hideTyping(){
+  if(typingEl){ typingEl.remove(); typingEl=null; }
+}
+
+function initChat(){
+  const key = S.apiKey;
+  const prompt = document.getElementById('api-key-prompt');
+  const msgs = document.getElementById('chat-messages');
+  if(!key){
+    prompt.style.display='block';
+    msgs.style.display='none';
+  } else {
+    prompt.style.display='none';
+    msgs.style.display='flex';
+    if(S.chatHistory.length===0){
+      appendBubble('tutor',"నమస్కారం! I'm Priya, your Telugu tutor. 😊\n\nI can help you:\n• Learn vocabulary and grammar\n• Practice sentences\n• Answer any question about Telugu\n\nTry asking: \"How do I say hello?\" or switch to Quiz mode and I'll test you!", true);
+    } else {
+      // Restore chat
+      S.chatHistory.forEach(m=>appendBubble(m.role,m.content,m.role==='assistant'));
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PROGRESS TAB
+// ═══════════════════════════════════════════════════════
+
+function renderProgress(){
+  const p = S.progress;
+  const cards = S.cards;
+  const levels = ['Beginner','Elementary','Intermediate'];
+  document.getElementById('p-streak').textContent = p.streak||0;
+  document.getElementById('p-xp').textContent = (p.xp||0).toLocaleString();
+  document.getElementById('p-level').textContent = levels[p.level||0];
+  document.getElementById('p-words').textContent = Object.keys(cards).length;
+  // accuracy
+  const stats = (p.session_stats||[]).slice(-7);
+  const avg = stats.length ? Math.round(stats.reduce((a,s)=>a+s.accuracy,0)/stats.length) : 0;
+  document.getElementById('p-accuracy').textContent = stats.length ? avg+'%' : '—';
+  // notification time
+  document.getElementById('notif-time').value = p.notification_time||'08:00';
+  drawAccuracyChart(stats);
+  renderUpcomingReviews(cards);
+  renderModuleGrid();
+}
+
+function drawAccuracyChart(stats){
+  const canvas = document.getElementById('accuracy-chart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio||1;
+  const w = canvas.offsetWidth; const h = 120;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  if(!stats.length){ ctx.fillStyle='#5a7a99'; ctx.font='13px DM Sans'; ctx.textAlign='center'; ctx.fillText('No data yet — complete a session!',w/2,h/2); return; }
+  const last7 = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const ds = d.toISOString().split('T')[0];
+    const s = stats.find(x=>x.date===ds);
+    last7.push({date:ds,accuracy:s?s.accuracy:null,label:d.toLocaleDateString([],{weekday:'short'})});
+  }
+  const barW = Math.floor(w/7)-8;
+  const maxH = h-28;
+  last7.forEach((d,i)=>{
+    const x = i*(w/7)+4;
+    const bh = d.accuracy!==null ? Math.max(4,Math.round(d.accuracy/100*maxH)) : 0;
+    const y = maxH - bh;
+    if(d.accuracy!==null){
+      const grad = ctx.createLinearGradient(0,y,0,maxH);
+      grad.addColorStop(0,'rgba(201,168,76,0.9)');
+      grad.addColorStop(1,'rgba(201,168,76,0.3)');
+      ctx.fillStyle=grad;
+      ctx.beginPath();
+      ctx.roundRect(x,y,barW,bh,3);
+      ctx.fill();
+      ctx.fillStyle='#e8c96d';
+      ctx.font='bold 10px DM Sans';
+      ctx.textAlign='center';
+      ctx.fillText(d.accuracy+'%',x+barW/2,y-3);
+    }
+    ctx.fillStyle='#5a7a99';
+    ctx.font='10px DM Sans';
+    ctx.textAlign='center';
+    ctx.fillText(d.label,x+barW/2,h-2);
+  });
+}
+
+function renderUpcomingReviews(cards){
+  const list = document.getElementById('review-list');
+  const upcoming = Object.entries(cards)
+    .filter(([,c])=>c.nextReview>=today())
+    .sort((a,b)=>a[1].nextReview.localeCompare(b[1].nextReview))
+    .slice(0,6);
+  if(!upcoming.length){ list.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:8px 0">No scheduled reviews yet.</div>'; return; }
+  list.innerHTML = upcoming.map(([id,c])=>{
+    const word = WORDS.find(w=>w.id===Number(id));
+    const isToday = c.nextReview===today();
+    return `<div class="review-item"><span class="review-word">${word?word.telugu:'?'} <span style="font-family:'DM Sans';font-size:11px;color:var(--text-muted)">${word?word.english:''}</span></span><span class="review-time">${isToday?'<span style="color:var(--success)">Today</span>':c.nextReview}</span></div>`;
+  }).join('');
+}
+
+function renderModuleGrid(){
+  const p = S.progress;
+  const cards = S.cards;
+  const grid = document.getElementById('module-grid');
+  grid.innerHTML = MODULES.map(m=>{
+    const locked = p.level < m.minLevel;
+    const available = WORDS.filter(w=>m.wordGroups.includes(w.semantic_group));
+    const seen = available.filter(w=>cards[w.id]).length;
+    const pct = available.length > 0 ? Math.round(seen/available.length*100) : 0;
+    return `<div class="module-card${locked?' locked':''}">
+      ${locked?'<span class="lock-icon">🔒</span>':''}
+      <h4>${m.icon} ${m.name}</h4>
+      <p>${m.desc}</p>
+      ${!locked&&available.length?`<div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+function showTab(tab){
+  // Hide all
+  document.getElementById('learn-view').style.display='none';
+  document.getElementById('chat-view').style.display='none';
+  document.getElementById('progress-view').style.display='none';
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(tab==='learn'){
+    document.getElementById('learn-view').style.display='block';
+    document.getElementById('nav-learn').classList.add('active');
+  } else if(tab==='chat'){
+    const cv = document.getElementById('chat-view');
+    cv.style.display='flex';
+    cv.style.flexDirection='column';
+    document.getElementById('nav-chat').classList.add('active');
+    initChat();
+  } else if(tab==='progress'){
+    document.getElementById('progress-view').style.display='block';
+    document.getElementById('nav-progress').classList.add('active');
+    renderProgress();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// API KEY MODAL
+// ═══════════════════════════════════════════════════════
+
+function openApiModal(){
+  document.getElementById('api-key-input').value = S.apiKey;
+  document.getElementById('api-modal').classList.add('open');
+}
+function closeApiModal(){ document.getElementById('api-modal').classList.remove('open'); }
+function saveApiKey(){
+  const key = document.getElementById('api-key-input').value.trim();
+  S.apiKey = key;
+  closeApiModal();
+  if(key) initChat();
+}
+// Close modal on overlay click
+document.getElementById('api-modal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeApiModal(); });
+
+// ═══════════════════════════════════════════════════════
+// NOTIFICATIONS & SERVICE WORKER
+// ═══════════════════════════════════════════════════════
+
+function saveNotifTime(val){
+  const p = S.progress;
+  p.notification_time = val;
+  S.progress = p;
+  scheduleNotification(val);
+}
+
+async function requestNotifications(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission==='default'){
+    const perm = await Notification.requestPermission();
+    if(perm==='granted') scheduleNotification(S.progress.notification_time||'08:00');
+  }
+}
+
+function scheduleNotification(timeStr){
+  if(Notification.permission!=='granted') return;
+  const [h,m] = timeStr.split(':').map(Number);
+  const now = new Date();
+  const target = new Date();
+  target.setHours(h,m,0,0);
+  if(target<=now) target.setDate(target.getDate()+1);
+  const delay = target-now;
+  if(delay < 86400000+60000){ // within 24h+1min
+    setTimeout(()=>{
+      new Notification('తెలుగు — Time to practice!',{
+        body:"Your daily Telugu session is waiting. Keep your streak alive! 🔥",
+        icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>'
+      });
+    }, delay);
+  }
+}
+
+function registerSW(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════
+
+function confirmReset(){
+  if(confirm('Reset ALL progress? This cannot be undone.')){
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+function init(){
+  checkStreak();
+  updateHeader();
+  registerSW();
+  requestNotifications();
+
+  if(!S.placementDone){
+    // First run — show quiz
+    document.getElementById('quiz-section').style.display='block';
+    document.getElementById('session-section').style.display='none';
+    document.getElementById('quiz-result').style.display='none';
+    renderQuiz();
+  } else {
+    // Returning user
+    document.getElementById('quiz-section').style.display='none';
+    document.getElementById('session-section').style.display='block';
+    buildModuleBar();
+    startSession();
+    // Banner if not visited today
+    const p = S.progress;
+    if(p.last_visit && p.last_visit !== today()){
+      document.getElementById('daily-banner').classList.add('show');
+    }
+  }
+}
+
+init();
+</script>
+</body>
+</html>
