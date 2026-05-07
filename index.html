@@ -906,37 +906,35 @@ function renderCard(){
 let _currentWord = null; // track word for speak button
 
 function speakCurrentWord(e){
-  e.stopPropagation(); // don't flip the card
+  e.stopPropagation();
   if(!_currentWord) return;
   if(!('speechSynthesis' in window)){
-    alert('Text-to-speech is not supported in this browser. Try Chrome or Safari.');
+    alert('Text-to-speech not supported. Try Chrome or Safari.');
     return;
   }
+
   const btn = document.getElementById('speak-btn');
   window.speechSynthesis.cancel();
 
-  // Prefer Telugu voice; fall back to phonetic hint read in English
-  const voices = window.speechSynthesis.getVoices();
-  const teluguVoice = voices.find(v => v.lang && v.lang.startsWith('te'));
+  // Read the pronunciation hint (e.g. "nee-roo") slowly — designed for English ears
+  // Strip hyphens and uppercase stress markers so it flows naturally
+  const text = _currentWord.pronunciation_hint
+    .replace(/-/g, ' ')
+    .replace(/[A-Z]+/g, m => m.toLowerCase())
+    .trim();
 
-  const utt = new SpeechSynthesisUtterance();
-  if(teluguVoice){
-    utt.voice = teluguVoice;
-    utt.lang = 'te-IN';
-    utt.text = _currentWord.telugu;
-    utt.rate = 0.85;
-  } else {
-    // Read the pronunciation hint slowly so it sounds like the word
-    utt.lang = 'en-US';
-    utt.text = _currentWord.pronunciation_hint.replace(/-/g,' ');
-    utt.rate = 0.7;
-    utt.pitch = 1.05;
-  }
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US';
+  utt.rate = 0.65;
+  utt.pitch = 1.0;
+  utt.volume = 1.0;
 
   btn.classList.add('speaking');
-  utt.onend = () => btn.classList.remove('speaking');
+  utt.onend  = () => btn.classList.remove('speaking');
   utt.onerror = () => btn.classList.remove('speaking');
-  window.speechSynthesis.speak(utt);
+
+  // Chrome sometimes needs a tiny delay after cancel() before speak() works
+  setTimeout(() => window.speechSynthesis.speak(utt), 50);
 }
 
 function flipCard(){
