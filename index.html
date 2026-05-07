@@ -155,6 +155,60 @@ body::after{
 #speak-icon{font-size:18px}
 @keyframes pulse-speak{0%,100%{opacity:1}50%{opacity:0.5}}
 
+/* ── INTRO CARD (meet this word) ── */
+#intro-card{
+  display:none;max-width:440px;margin:0 auto;
+  background:linear-gradient(145deg,var(--surface2),#0f2540);
+  border:1.5px solid rgba(201,168,76,0.3);border-radius:20px;
+  padding:28px 22px 22px;text-align:center;
+  animation:fadeIn 0.35s ease forwards;
+}
+.intro-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.35);
+  border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-text);
+  margin-bottom:18px;
+}
+#intro-english{
+  font-size:20px;font-weight:600;color:var(--text-muted);margin-bottom:10px;
+}
+#intro-translit{
+  font-size:42px;font-weight:700;color:var(--gold-text);
+  font-family:'Cormorant Garamond',serif;
+  text-shadow:0 0 40px rgba(201,168,76,0.35);margin-bottom:4px;
+  line-height:1.2;
+}
+#intro-meaning{
+  font-size:13px;color:var(--text-muted);margin-bottom:16px;font-style:italic;
+}
+#intro-speak-btn{
+  display:flex;align-items:center;gap:8px;margin:0 auto 18px;
+  background:rgba(201,168,76,0.12);border:1.5px solid rgba(201,168,76,0.4);
+  border-radius:24px;padding:10px 24px;cursor:pointer;
+  transition:all 0.18s;color:var(--gold-text);font-size:14px;font-weight:600;
+  font-family:'DM Sans',sans-serif;
+}
+#intro-speak-btn:hover{background:rgba(201,168,76,0.22);border-color:var(--gold);transform:scale(1.04)}
+#intro-speak-btn.speaking{border-color:var(--gold);animation:pulse-speak 0.8s infinite}
+.intro-divider{width:100%;height:1px;background:var(--border);margin:0 0 16px}
+.intro-example{
+  margin-bottom:18px;padding:12px 14px;background:rgba(201,168,76,0.05);
+  border-radius:10px;border:1px solid var(--border);text-align:left;
+}
+.intro-ex-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;font-weight:600}
+.intro-ex-eng{font-size:13px;color:var(--text);margin-bottom:3px;font-style:italic}
+.intro-ex-translit{font-size:12px;color:var(--accent)}
+.intro-say-hint{font-size:13px;color:var(--text-muted);margin-bottom:18px}
+#intro-got-it{
+  width:100%;padding:16px;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  color:#0d1b2e;font-size:15px;font-weight:700;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:transform 0.15s;
+}
+#intro-got-it:hover{transform:translateY(-1px)}
+#intro-counter{font-size:11px;color:var(--text-muted);margin-top:10px;letter-spacing:0.5px}
+
 /* ── RATING BUTTONS ── */
 #rating-row{display:flex;gap:8px;margin-top:16px;justify-content:center}
 .rating-btn{
@@ -492,6 +546,27 @@ body::after{
             </div>
           </div>
         </div>
+        <!-- Intro card for new words -->
+        <div id="intro-card">
+          <div class="intro-badge">✨ New Word</div>
+          <div id="intro-english"></div>
+          <div id="intro-translit"></div>
+          <div id="intro-meaning"></div>
+          <button id="intro-speak-btn" onclick="speakIntroWord(event)">
+            <span style="font-size:18px">🔊</span>
+            <span id="intro-speak-hint"></span>
+          </button>
+          <div class="intro-divider"></div>
+          <div class="intro-example">
+            <div class="intro-ex-label">Example sentence</div>
+            <div class="intro-ex-eng" id="intro-ex-eng"></div>
+            <div class="intro-ex-translit" id="intro-ex-translit"></div>
+          </div>
+          <div class="intro-say-hint">🗣️ Say it out loud — then tap below to practice it!</div>
+          <button id="intro-got-it" onclick="introGotIt()">I said it — now test me! →</button>
+          <div id="intro-counter"></div>
+        </div>
+
         <!-- Rating -->
         <div id="rating-row" style="display:none">
           <button class="rating-btn r1" onclick="rateCard(1)"><span class="r-num">1</span>Again</button>
@@ -739,15 +814,18 @@ function getAvailableWordIds(){
 
 function buildSession(){
   const cards = S.cards;
+  // True beginner with no history: start with just 6 essential greetings
+  if(Object.keys(cards).length === 0 && activeModule === 0){
+    return [1,2,3,4,5,6];
+  }
   const availIds = getAvailableWordIds();
   const p = S.progress;
-  const maxNew = p.new_cards_per_session || 10;
+  const maxNew = p.new_cards_per_session || 6;
   const dueCards = availIds.filter(id=>cards[id]&&isDue(cards[id]));
   const newIds = availIds.filter(id=>!cards[id]);
   const session = [...dueCards];
   const newToAdd = Math.min(maxNew, Math.max(0, 20 - dueCards.length), newIds.length);
   for(let i=0;i<newToAdd;i++) session.push(newIds[i]);
-  // shuffle
   return session.sort(()=>Math.random()-0.5).slice(0,20);
 }
 
@@ -864,6 +942,7 @@ function startSession(){
   const ids = buildSession();
   if(ids.length === 0){
     document.getElementById('flashcard-wrap').style.display='none';
+    document.getElementById('intro-card').style.display='none';
     document.getElementById('rating-row').style.display='none';
     document.getElementById('session-complete').style.display='none';
     document.getElementById('no-cards').style.display='block';
@@ -881,16 +960,43 @@ function startSession(){
   cardFlipped = false;
   document.getElementById('no-cards').style.display='none';
   document.getElementById('session-complete').style.display='none';
-  document.getElementById('flashcard-wrap').style.display='block';
+  document.getElementById('intro-card').style.display='none';
   document.getElementById('rating-row').style.display='none';
   renderCard();
   updateSessionInfo();
 }
 
 function renderCard(){
-  const word = WORDS.find(w=>w.id===sessionCards[sessionIndex]);
+  const wordId = sessionCards[sessionIndex];
+  const word = WORDS.find(w=>w.id===wordId);
   if(!word) return;
   _currentWord = word;
+  const isNew = !S.cards[wordId];
+  if(isNew){ showIntroCard(word); } else { showFlashcard(word); }
+  updateSessionInfo();
+}
+
+function showIntroCard(word){
+  document.getElementById('intro-card').style.display='block';
+  document.getElementById('flashcard-wrap').style.display='none';
+  document.getElementById('rating-row').style.display='none';
+  document.getElementById('intro-english').textContent = word.english;
+  document.getElementById('intro-translit').textContent = word.transliteration;
+  document.getElementById('intro-meaning').textContent = 'sounds like "' + word.pronunciation_hint + '"';
+  document.getElementById('intro-speak-hint').textContent = word.pronunciation_hint;
+  document.getElementById('intro-ex-eng').textContent = '"' + word.example_sentence_english + '"';
+  document.getElementById('intro-ex-translit').textContent = word.example_sentence_telugu;
+  const remaining = sessionCards.slice(sessionIndex).filter(id=>!S.cards[id]).length;
+  const totalNew = sessionCards.filter(id=>!S.cards[id]).length;
+  document.getElementById('intro-counter').textContent =
+    remaining === totalNew
+      ? `Meet all ${totalNew} new words first — then we\'ll test you!`
+      : `${remaining} new word${remaining!==1?'s':''} left to introduce`;
+}
+
+function showFlashcard(word){
+  document.getElementById('intro-card').style.display='none';
+  document.getElementById('flashcard-wrap').style.display='block';
   document.getElementById('flashcard').classList.remove('flipped');
   cardFlipped = false;
   document.getElementById('rating-row').style.display='none';
@@ -900,7 +1006,6 @@ function renderCard(){
   document.getElementById('speak-hint').textContent = word.pronunciation_hint;
   document.getElementById('fc-ex-eng').textContent = '"' + word.example_sentence_english + '"';
   document.getElementById('fc-ex-tel').textContent = word.transliteration ? '(' + word.example_sentence_telugu + ')' : '';
-  updateSessionInfo();
 }
 
 let _currentWord = null; // track word for speak button
@@ -935,6 +1040,41 @@ function speakCurrentWord(e){
 
   // Chrome sometimes needs a tiny delay after cancel() before speak() works
   setTimeout(() => window.speechSynthesis.speak(utt), 50);
+}
+
+function speakIntroWord(e){
+  e.stopPropagation();
+  if(!_currentWord) return;
+  if(!('speechSynthesis' in window)){ alert('Text-to-speech not supported. Try Chrome or Safari.'); return; }
+  const btn = document.getElementById('intro-speak-btn');
+  window.speechSynthesis.cancel();
+  const text = _currentWord.pronunciation_hint
+    .replace(/-/g, ' ')
+    .replace(/[A-Z]+/g, m => m.toLowerCase())
+    .trim();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US'; utt.rate = 0.65; utt.pitch = 1.0; utt.volume = 1.0;
+  btn.classList.add('speaking');
+  utt.onend  = () => btn.classList.remove('speaking');
+  utt.onerror = () => btn.classList.remove('speaking');
+  setTimeout(() => window.speechSynthesis.speak(utt), 50);
+}
+
+function introGotIt(){
+  const wordId = sessionCards[sessionIndex];
+  const cards = S.cards;
+  if(!cards[wordId]){
+    // Mark as introduced — due today so it immediately becomes a flashcard test
+    cards[wordId] = {
+      interval:1, easeFactor:2.5, repetitions:0,
+      nextReview:today(), lastRating:null, introduced:true
+    };
+    S.cards = cards;
+  }
+  awardXP(2);
+  // Re-render the same card — now it's known so showFlashcard() will run
+  renderCard();
+  updateSessionInfo();
 }
 
 function flipCard(){
@@ -983,6 +1123,7 @@ function finishSession(){
   else if(acc < 60) p.new_cards_per_session = Math.max(3, (p.new_cards_per_session||10)-2);
   S.progress = p;
   document.getElementById('flashcard-wrap').style.display='none';
+  document.getElementById('intro-card').style.display='none';
   document.getElementById('rating-row').style.display='none';
   document.getElementById('session-complete').style.display='block';
   document.getElementById('sc-cards').textContent = total;
